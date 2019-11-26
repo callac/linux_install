@@ -218,9 +218,9 @@ install_nginx(){
         apt-get update
         apt-get install nginx -y
         # 隐藏nginx版本号
-        sed -i "s/.*server_tokens.*%/        server_tokens off;/g" /etc/nginx/nginx.conf
+        sed -i "s/.*server_tokens.*/        server_tokens off;/" /etc/nginx/nginx.conf
         # 增加 json日志格式
-        cat > tmp_json.config <<eof
+        cat > ./tmp_json.config <<eof
         log_format json '{"@timestamp":"\$time_iso8601",'
          '"slbip":"\$remote_addr",'
          '"clientip":"\$http_x_forwarded_for",'
@@ -242,10 +242,10 @@ install_nginx(){
 eof
 
         sed -i '22r tmp_json.config' /etc/nginx/nginx.conf
-
+        rm ./tmp_json.config
 
         #重新加载nginx
-        nginx -s reload
+        service nginx restart
 
     fi
     
