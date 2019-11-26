@@ -133,7 +133,7 @@ sys_timezone() {
 #设置最大打开文件数 所有用户都生效
 set_max_open_files(){
     if cat /etc/security/limits.conf |grep -v '#' |grep nofile ; then
-        echo -e "${yellow} 你已经设置过了，就不要再执行我了，如果没有生效，请检查下是否忘记重启了 ${none}"
+        echo -e "${yellow} 你已经设置过了，就不要再执行了，当前的数值是: ${red}`ulimit -n`${none},如果没有生效，请检查下是否忘记重启了 ${none}"
     else
         limits=/etc/security/limits.conf
         echo "root soft nofile 65535" >> $limits
