@@ -327,7 +327,7 @@ print_systeminfo()
     echo "Swap: " `free -m |grep Swap | awk '{ print $2 }'` "M"
     echo "ulimit: `ulimit -n`"
     echo "Kernel version: " `cat /proc/version`
-    echo "${red}建议1~5执行一轮后重启${node}"
+    echo -e "${red} 建议1~5都执行一遍，其中第5个swap要根据实际情况判断执行 ${none}"
     echo "**********************************"
 }
 
