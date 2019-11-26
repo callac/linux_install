@@ -327,23 +327,24 @@ print_systeminfo()
     echo "Swap: " `free -m |grep Swap | awk '{ print $2 }'` "M"
     echo "ulimit: `ulimit -n`"
     echo "Kernel version: " `cat /proc/version`
+    
     echo "**********************************"
 }
 
 help()
 {
-    echo "1) patch_upgrade      6) set_hostname         11) change_docker_mirror"
+    echo "1) patch_upgrade      6) add_user         11) change_docker_mirror"
     echo "2) sys_timezone        7) install_ohmyzsh        12) exit"
     echo "3) set_max_open_files         8) install_nginx  13) help"
-    echo "4) add_user       9) install_supervisor"
+    echo "4) set_hostname       9) install_supervisor"
     echo "5) change_swap                 10) install_docker"
 }
 
 main()
 {
     print_systeminfo
-    centos_funcs="patch_upgrade sys_timezone set_max_open_files add_user
-                change_swap set_hostname install_ohmyzsh install_nginx install_supervisor install_docker change_docker_mirror exit help"
+    centos_funcs="patch_upgrade sys_timezone set_max_open_files set_hostname
+                change_swap add_user install_ohmyzsh install_nginx install_supervisor install_docker change_docker_mirror exit help"
     select centos_func in $centos_funcs:
     do
         case $REPLY in
@@ -353,11 +354,11 @@ main()
         ;;
         3) set_max_open_files
         ;;
-        4) add_user
+        4) set_hostname
         ;;
         5) change_swap
         ;;
-        6) set_hostname
+        6) add_user
         ;;
         7) install_ohmyzsh
         ;;
