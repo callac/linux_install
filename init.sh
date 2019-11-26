@@ -279,15 +279,24 @@ install_docker()
 
     # ubuntu版本
     echo "installing docker ..."
+    apt-get remove docker docker-engine docker.io
     apt update
     echo "docker installed !!!!!!!!!!!"
-    apt install apt-transport-https ca-certificates curl software-properties-common
-    echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable" >> /etc/apt/sources.list.d/docker.list
+    sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    software-properties-common
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    apt install docker-ce -y 
+    sudo add-apt-repository \
+     "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+     $(lsb_release -cs) \
+     stable"
+    apt-get update
+    apt-get install docker-ce
     echo "docker installed !!!"
-    echo "docker status"
-    systemctl status docker
+    echo "docker version"
+    docker -v
 
 }
 
