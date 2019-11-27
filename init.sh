@@ -333,8 +333,8 @@ print_systeminfo()
     fi
     echo "Cpu model:" `cat /proc/cpuinfo |grep "model name" | awk '{ print $4" "$5""$6" "$7 ; exit }'`
     echo "Memory:" `free -m |grep Mem | awk '{ print $2 }'` "M"
-    echo "Swap: " `free -m |grep Swap | awk '{ print $2 }'` "M"
-    echo "ulimit: `ulimit -n`"
+    echo -e "${red}Swap: " `free -m |grep Swap | awk '{ print $2 }'` "M${none}"
+    echo -e "${red}ulimit: `ulimit -n`${none}"
     echo "Kernel version: " `cat /proc/version`
     echo -e "${red} 建议1~5都执行一遍，其中第5个swap要根据实际情况判断执行 ${none}"
     echo "**********************************"
