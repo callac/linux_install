@@ -167,6 +167,10 @@ change_swap()
     free -h
     mkdir /SwapDir
     cd /SwapDir
+    echo -e "${yellow}4G以内的物理内存，SWAP 设置为内存的2倍 ${none}"
+    echo -e "${yellow}4-8G的物理内存，SWAP 等于内存大小 ${none}"
+    echo -e "${yellow}8-64G 的物理内存，SWAP 设置为8G ${none}"
+    echo -e "${yellow}64-256G物理内存，SWAP 设置为16G ${none}"
     echo -e "${red} Only one chance!!! ${none}"
     echo -e "${red} Only one chance!!! ${none}"
     echo -e "${red} Only one chance!!! ${none}"
