@@ -133,8 +133,10 @@ sys_timezone() {
 #设置最大打开文件数 所有用户都生效
 set_max_open_files(){
     if cat /etc/security/limits.conf |grep -v '#' |grep nofile ; then
+        echo
         echo -e "${yellow} 你已经设置过了，就不要再执行了，当前的数值是: ${red}`ulimit -n`${none},如果没有生效，请检查下是否忘记重启了 ${none}"
     else
+        echo
         limits=/etc/security/limits.conf
         echo "root soft nofile 65535" >> $limits
         echo "root hard nofile 65535" >> $limits
@@ -163,33 +165,43 @@ add_user()
 #设置交换分区
 change_swap()
 {
-    echo -e "${yellow} Your current swap is ${none}"
-    free -h
-    mkdir /SwapDir
-    cd /SwapDir
-    echo -e "${yellow}4G以内的物理内存，SWAP 设置为内存的2倍 ${none}"
-    echo -e "${yellow}4-8G的物理内存，SWAP 等于内存大小 ${none}"
-    echo -e "${yellow}8-64G 的物理内存，SWAP 设置为8G ${none}"
-    echo -e "${yellow}64-256G物理内存，SWAP 设置为16G ${none}"
-    echo -e "${red} Only one chance!!! ${none}"
-    echo -e "${red} Only one chance!!! ${none}"
-    echo -e "${red} Only one chance!!! ${none}"
-    read -p "please input your swapfile size:(M)" size
-    dd if=/dev/zero of=/SwapDir/swap bs=1M count=$size
-    chmod 0600 swap
-    mkswap /SwapDir/swap
-    swapon /SwapDir/swap
-    myFile=/etc/fstab.bak
-    cd /etc
-    if [ -f "$myFile" ];then
-        rm -rf fstab.bak 
+    if [[ -f /SwapDir/swap ]] ; then
+        echo
+        echo -e "${yellow} Your system swap is : ${none}"
+        free -h
+        echo -e "${red}你已经执行过了，我不允许你再执行${none}"
+        echo
     else
-        cp /etc/fstab /etc/fstab.bak 
+        echo
+        echo -e "${yellow} Your current swap is ${none}"
+        free -h
+        mkdir /SwapDir
+        cd /SwapDir
+        echo -e "${yellow}4G以内的物理内存，SWAP 设置为内存的2倍 ${none}"
+        echo -e "${yellow}4-8G的物理内存，SWAP 等于内存大小 ${none}"
+        echo -e "${yellow}8-64G 的物理内存，SWAP 设置为8G ${none}"
+        echo -e "${yellow}64-256G物理内存，SWAP 设置为16G ${none}"
+        echo -e "${red} Only one chance!!! ${none}"
+        echo -e "${red} Only one chance!!! ${none}"
+        echo -e "${red} Only one chance!!! ${none}"
+        read -p "please input your swapfile size:(M)" size
+        dd if=/dev/zero of=/SwapDir/swap bs=1M count=$size
+        chmod 0600 swap
+        mkswap /SwapDir/swap
+        swapon /SwapDir/swap
+        myFile=/etc/fstab.bak
+        cd /etc
+        if [ -f "$myFile" ];then
+            rm -rf fstab.bak 
+        else
+            cp /etc/fstab /etc/fstab.bak 
+        fi
+        echo "/SwapDir/swap swap swap defaults 0 0">>/etc/fstab
+        echo -e "${red} Done\!Congratulation\！System swap add successful\！ ${none}"
+        echo -e "${yellow} Your system swap is \: ${none}"
+        free -h
     fi
-    echo "/SwapDir/swap swap swap defaults 0 0">>/etc/fstab
-    echo -e "${red} Done\!Congratulation\！System swap add successful\！ ${none}"
-    echo -e "${yellow} Your system swap is \: ${none}"
-    free -h
+
 }
 
 #设置主机名
@@ -215,6 +227,7 @@ install_ohmyzsh()
 install_nginx(){
     echo "starting install nginx ..."
     if [[ -f /etc/nginx/nginx.conf ]] ; then
+        echo
         echo "${yellow}你已经安装过nginx了，最好卸载后再来安装${none}"
     else
         apt-get install software-properties-common -y
@@ -259,6 +272,7 @@ eof
 install_supervisor(){
    echo "starting install nginx ..."
     if [[ -f /etc/supervisor/supervisord.conf ]] ; then
+        echo
         echo "${yellow}你已经安装过supervisor了，无需重新安装${none}"
     else
         apt-get update
@@ -286,18 +300,18 @@ install_docker()
     apt-get remove docker docker-engine docker.io
     apt update
     echo "docker installed !!!!!!!!!!!"
-    sudo apt-get install \
+    apt-get -y install \
     apt-transport-https \
     ca-certificates \
     curl \
     software-properties-common
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    sudo add-apt-repository \
+    add-apt-repository \
      "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
      $(lsb_release -cs) \
      stable"
     apt-get update
-    apt-get install docker-ce
+    apt-get install docker-ce -y
     echo "docker installed !!!"
     echo "docker version"
     docker -v
