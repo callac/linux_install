@@ -338,8 +338,8 @@ EOF
 print_systeminfo()
 {
     echo "**********************************"
-    echo "Powered by callac"
-    echo "Email: cq53767968@gmail.com"
+    echo -e "${yellow}Powered by callac${none}"
+    echo -e "${yellow}Email: cq53767968@gmail.com${none}"
     echo "Hostname:" `hostname`
     # virtualization
     cat /proc/cpuinfo |grep vmx >> /dev/null
