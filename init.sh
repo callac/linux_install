@@ -228,7 +228,7 @@ install_nginx(){
     echo "starting install nginx ..."
     if [[ -f /etc/nginx/nginx.conf ]] ; then
         echo
-        echo "${yellow}你已经安装过nginx了，最好卸载后再来安装${none}"
+        echo -e "${yellow}你已经安装过nginx了，最好卸载后再来安装${none}"
     else
         apt-get install software-properties-common -y
         add-apt-repository ppa:nginx/stable -y
@@ -331,6 +331,56 @@ EOF
     echo "docker mirror change successful"
 }
 
+#安装node_exporter,用于监控系统性能
+install_node_exporter()
+{
+
+	port=9100
+	grep_port=`netstat -tlpn | grep "\b${port}\b"`
+
+    #因为是通过supervisor启动的，先判断是否安装了superviso
+	if [[ ! -e /etc/supervisor/supervisord.conf ]] ; then
+        echo
+    	echo -e "${yellow}因为是通过supervisor安装的，请安装后再来${none},${red}安装命令参考: apt-get update && apt-get install supervisor ${node}"
+	#
+	elif [[ -e /var/node_exporter/node_exporter-0.17.0.linux-amd64/node_exporter ]] ; then #判断是否已经安装过
+    	echo
+    	echo -e "%{yellow}您已经安装过了，无需重复安装${node}"
+	#
+	elif [[ -n "$grep_port" ]] ; then  #判断9100端口是否被占用
+    	echo
+    	echo -e "${yellow}大佬，我需要用到${port}端口，已被您占用了，请您再检查下，检查命令是：netstat -tlpn | grep '\\\b${port}\\\b'${node}"
+	else  #安装
+    	wget https://github.com/prometheus/node_exporter/releases/download/v0.17.0/node_exporter-0.17.0.linux-amd64.tar.gz
+    	mkdir /var/node_exporter
+    	echo "decompression ..."
+    	tar xf node_exporter-0.17.0.linux-amd64.tar.gz -C /var/node_exporter/
+    	rm node_exporter-0.17.0.linux-amd64.tar.gz
+		cat > /etc/supervisor/conf.d/node_exporter.conf <<eof
+[program:node_exporter]
+directory=/var/node_exporter/node_exporter-0.17.0.linux-amd64  ; 程序文件夹
+command=/var/node_exporter/node_exporter-0.17.0.linux-amd64/node_exporter ; 启动程序的命令
+user=root  ; 指定用户
+priority=1 ; 优先级 默认：999，数值越小优先级越高
+autostart=true    ; 是否随supervisor启动而自动启动
+;startsecs=40    ; 启动正常运行多久，则为启动成功。默认为：1秒
+stopasgroup=true    ; 默认为false,进程被杀死时，是否向这个进程组发送stop信号，包括子进程
+killasgroup=true    ; 默认为false，向进程组发送kill信号，包括子进程
+redirect_stderr=true    ; std_error日志重定向到std_out
+stdout_logfile_maxbytes=50MB    ; 日志最大大小
+stdout_logfile_backups=10    ; 日志最多保留数量
+stdout_logfile=/var/log/supervisor/node_exporter.log    ; 日志路径
+
+eof
+
+		supervisorctl update
+		echo "您已成功安装node_exporter"
+
+
+	fi
+	
+}
+
 #安装mysql,等待增加
 
 
@@ -354,24 +404,26 @@ print_systeminfo()
     echo -e "${red}Swap: " `free -m |grep Swap | awk '{ print $2 }'` "M${none}"
     echo -e "${red}ulimit: `ulimit -n`${none}"
     echo "Kernel version: " `cat /proc/version`
-    echo -e "${red} 建议1~5都执行一遍，其中第5个swap要根据实际情况判断执行 ${none}"
+    echo -e "${red} 新机器建议1~5都执行一遍，其中第5个swap要根据实际情况判断执行 ${none}"
     echo "**********************************"
 }
 
 help()
 {
     echo "1) patch_upgrade      6) add_user         11) change_docker_mirror"
-    echo "2) sys_timezone        7) install_ohmyzsh        12) exit"
-    echo "3) set_max_open_files         8) install_nginx  13) help"
-    echo "4) set_hostname       9) install_supervisor"
+    echo "2) sys_timezone        7) install_ohmyzsh        12) install_node_exporter"
+    echo "3) set_max_open_files         8) install_nginx  13) exit"
+    echo "4) set_hostname       9) install_supervisor  13) help"
     echo "5) change_swap                 10) install_docker"
 }
+
+
 
 main()
 {
     print_systeminfo
     centos_funcs="patch_upgrade sys_timezone set_max_open_files set_hostname
-                change_swap add_user install_ohmyzsh install_nginx install_supervisor install_docker change_docker_mirror exit help"
+                change_swap add_user install_ohmyzsh install_nginx install_supervisor install_docker change_docker_mirror install_node_exporter exit help"
     select centos_func in $centos_funcs:
     do
         case $REPLY in
@@ -397,9 +449,11 @@ main()
         ;;
         11) change_docker_mirror
         ;;
-        12) exit
+        12) install_node_exporter
         ;;
-        13) help
+        13) exit
+        ;;
+        14) help
         ;;
         *) echo "please select a true num"
         ;;
