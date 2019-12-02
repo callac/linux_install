@@ -341,7 +341,7 @@ install_node_exporter()
     #因为是通过supervisor启动的，先判断是否安装了superviso
 	if [[ ! -e /etc/supervisor/supervisord.conf ]] ; then
         echo
-    	echo -e "${yellow}因为是通过supervisor安装的，请安装后再来${none},${red}安装命令参考: apt-get update && apt-get install supervisor ${node}"
+    	echo -e "${yellow}因为是通过supervisor安装的，请先执行install_supervisor相关序号后再来${none}"
 	#
 	elif [[ -e /var/node_exporter/node_exporter-0.17.0.linux-amd64/node_exporter ]] ; then #判断是否已经安装过
     	echo
