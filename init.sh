@@ -433,7 +433,7 @@ help()
     echo "3) set_max_open_files		9) install_openJDK8		15) exit"
     echo "4) set_hostname		10) install_golang		16) help"
     echo "5) change_swap		11) install_supervisor		"
-    echo "6) add_user			12) install_docker"		"
+    echo "6) add_user			12) install_docker		"
 }
 
 
