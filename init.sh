@@ -8,6 +8,8 @@
 # 设置主机名
 # 安装oh-my-zsh
 # 安装最新版nginx
+# 安装OpenJDK8
+# 安装最新GO
 # 安装docker
 # 更改docker源为国内镜像仓库
 # 】
@@ -268,6 +270,22 @@ eof
     
 }
 
+# 安装OpenJDK8
+install_openJDK8(){
+   echo "starting install OpenJDK8"
+   apt-get update
+   apt-get install openjdk-8-jdk
+}
+
+
+# 安装最新GO
+install_golang(){
+   echo "starting install golang"
+   add-apt-repository ppa:longsleep/golang-backports -y
+   apt-get update
+   apt-get install golang-go
+}
+
 #安装supervisor
 install_supervisor(){
    echo "starting install nginx ..."
@@ -410,20 +428,21 @@ print_systeminfo()
 
 help()
 {
-    echo "1) patch_upgrade      6) add_user         11) change_docker_mirror"
-    echo "2) sys_timezone        7) install_ohmyzsh        12) install_node_exporter"
-    echo "3) set_max_open_files         8) install_nginx  13) exit"
-    echo "4) set_hostname       9) install_supervisor  13) help"
-    echo "5) change_swap                 10) install_docker"
+    echo "1) patch_upgrade		7) install_ohmyzsh		13) change_docker_mirror"
+    echo "2) sys_timezone		8) install_nginx		14) install_node_exporter"
+    echo "3) set_max_open_files		9) install_openJDK8		15) exit"
+    echo "4) set_hostname		10) install_golang		16) help"
+    echo "5) change_swap		11) install_supervisor		"
+    echo "6) add_user			12) install_docker"		"
 }
-
 
 
 main()
 {
     print_systeminfo
     centos_funcs="patch_upgrade sys_timezone set_max_open_files set_hostname
-                change_swap add_user install_ohmyzsh install_nginx install_supervisor install_docker change_docker_mirror install_node_exporter exit help"
+                change_swap add_user install_ohmyzsh install_nginx install_openJDK8 
+		install_golang install_supervisor install_docker change_docker_mirror install_node_exporter exit help"
     select centos_func in $centos_funcs:
     do
         case $REPLY in
@@ -443,17 +462,21 @@ main()
         ;;
         8) install_nginx
         ;;
-        9) install_supervisor
+	9) install_openJDK8
         ;;
-        10) install_docker
+        10) install_golang
         ;;
-        11) change_docker_mirror
+        11) install_supervisor
         ;;
-        12) install_node_exporter
+        12) install_docker
         ;;
-        13) exit
+        13) change_docker_mirror
         ;;
-        14) help
+        14) install_node_exporter
+        ;;
+        15) exit
+        ;;
+        16) help
         ;;
         *) echo "please select a true num"
         ;;
