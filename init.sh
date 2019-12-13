@@ -183,7 +183,8 @@ change_swap()
         echo -e "${yellow}4-8G的物理内存，SWAP 等于内存大小 ${none}"
         echo -e "${yellow}8-64G 的物理内存，SWAP 设置为8192M ${none}"
         echo -e "${yellow}64-256G物理内存，SWAP 设置为16384M ${none}"
-        echo -e "${red} Only one chance!!! ${none}"
+        echo -e "${red} 文件会创建到/SwapDir/ 目录下，请注意根路径空间足够大 ${none}"
+	echo -e "${red} Only one chance!!! ${none}"
         echo -e "${red} Only one chance!!! ${none}"
         echo -e "${red} Only one chance!!! ${none}"
         read -p "please input your swapfile size:(M)" size
