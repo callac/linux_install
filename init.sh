@@ -302,6 +302,9 @@ install_supervisor(){
 #安装docker，这里还有卸载没处理，后续优化
 install_docker()
 {
+    # 通用
+    # curl -fsSL https://get.docker.com | sh
+    
     # centos版本的安装
     # echo "installing docker ..."
     # curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
