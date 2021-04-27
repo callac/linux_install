@@ -373,7 +373,8 @@ install_node_exporter()
     	echo
     	echo -e "${yellow}大佬，我需要用到${port}端口，已被您占用了，请您再检查下，检查命令是：netstat -tlpn | grep '\\\b${port}\\\b'${node}"
 	else  #安装
-    	wget https://github.com/prometheus/node_exporter/releases/download/v0.17.0/node_exporter-0.17.0.linux-amd64.tar.gz
+    	#wget https://github.com/prometheus/node_exporter/releases/download/v0.17.0/node_exporter-0.17.0.linux-amd64.tar.gz
+	wget https://github.com/prometheus/node_exporter/releases/download/v1.1.2/node_exporter-1.1.2.linux-amd64.tar.gz
     	mkdir /var/node_exporter
     	echo "decompression ..."
     	tar xf node_exporter-0.17.0.linux-amd64.tar.gz -C /var/node_exporter/
