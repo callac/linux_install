@@ -377,12 +377,12 @@ install_node_exporter()
 	wget https://github.com/prometheus/node_exporter/releases/download/v1.1.2/node_exporter-1.1.2.linux-amd64.tar.gz
     	mkdir /var/node_exporter
     	echo "decompression ..."
-    	tar xf node_exporter-0.17.0.linux-amd64.tar.gz -C /var/node_exporter/
-    	rm node_exporter-0.17.0.linux-amd64.tar.gz
+    	tar xf node_exporter-1.1.2.linux-amd64.tar.gz -C /var/node_exporter/
+    	rm node_exporter-1.1.2.linux-amd64.tar.gz
 		cat > /etc/supervisor/conf.d/node_exporter.conf <<eof
 [program:node_exporter]
-directory=/var/node_exporter/node_exporter-0.17.0.linux-amd64  ; 程序文件夹
-command=/var/node_exporter/node_exporter-0.17.0.linux-amd64/node_exporter ; 启动程序的命令
+directory=/var/node_exporter/node_exporter-1.1.2.linux-amd64  ; 程序文件夹
+command=/var/node_exporter/node_exporter-1.1.2.linux-amd64/node_exporter ; 启动程序的命令
 user=root  ; 指定用户
 priority=1 ; 优先级 默认：999，数值越小优先级越高
 autostart=true    ; 是否随supervisor启动而自动启动
