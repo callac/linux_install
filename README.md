@@ -19,4 +19,4 @@
 - centos版本判断执行
 
 ####  执行方式
-bash <(curl -s -L https://raw.githubusercontent.com/callac/linux_install/master/init.sh)
+bash <(curl -s -L https://git.io/JsRFR)
