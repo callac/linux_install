@@ -156,6 +156,7 @@ add_user()
     read -p "Username:" username
     read -p "Password:" password
     useradd -d /home/$username -m $username
+    usermod -s /bin/bash $username
     # CentOS:
     # echo $password |passwd --stdin $username
     # ubuntu:
