@@ -155,8 +155,9 @@ add_user()
     echo  "starting add user ..."
     read -p "Username:" username
     read -p "Password:" password
-    useradd -d /home/$username -m $username
-    usermod -s /bin/bash $username
+    useradd -d /home/$username -m $username -s /bin/bash
+    # 补救时用
+    # usermod -s /bin/bash $username
     # CentOS:
     # echo $password |passwd --stdin $username
     # ubuntu:
