@@ -291,7 +291,7 @@ install_golang(){
 
 #安装supervisor
 install_supervisor(){
-   echo "starting install nginx ..."
+   echo "starting install supervisor ..."
     if [[ -f /etc/supervisor/supervisord.conf ]] ; then
         echo
         echo "${yellow}你已经安装过supervisor了，无需重新安装${none}"
