@@ -457,7 +457,7 @@ main()
     print_systeminfo
     centos_funcs="patch_upgrade sys_timezone set_max_open_files set_hostname
                 change_swap add_user install_ohmyzsh install_nginx install_openJDK8 
-		install_golang install_supervisor install_docker change_docker_mirror install_node_exporter exit help"
+		install_golang install_supervisor install_docker change_docker_mirror install_node_exporter install_openJDK11 exit help"
     select centos_func in $centos_funcs:
     do
         case $REPLY in
