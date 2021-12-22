@@ -445,7 +445,7 @@ help()
 {
     echo "1) patch_upgrade		7) install_ohmyzsh		13) change_docker_mirror"
     echo "2) sys_timezone		8) install_nginx		14) install_node_exporter"
-    echo "3) set_max_open_files		9) install_openJDK8		15) install_openJDK11
+    echo "3) set_max_open_files		9) install_openJDK8		15) install_openJDK11"
     echo "4) set_hostname		10) install_golang		16) exit"
     echo "5) change_swap		11) install_supervisor		17) help"
     echo "6) add_user			12) install_docker		"
