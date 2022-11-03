@@ -243,7 +243,7 @@ install_nginx(){
         sed -i "s/.*server_tokens.*/        server_tokens off;/" /etc/nginx/nginx.conf
         # 增加 json日志格式
         cat > ./tmp_json.config <<eof
-        log_format json '{"@timestamp":"\$time_iso8601",'
+        log_format json escape=json '{"@timestamp":"\$time_iso8601",'
          '"slbip":"\$remote_addr",'
          '"clientip":"\$http_x_forwarded_for",'
          '"serverip":"\$server_addr",'
@@ -350,6 +350,15 @@ install_docker()
 
 }
 
+#安装docker-compose，这里还有卸载没处理，后续优化
+install_docker_compose()
+{
+    curl -L "https://github.com/docker/compose/releases/download/v2.12.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
+    ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+    echo "docker-compose version"
+    docker-compose version
+}
 
 #更改docker源为国内镜像仓库
 change_docker_mirror()
@@ -443,12 +452,12 @@ print_systeminfo()
 
 help()
 {
-    echo "1) patch_upgrade		7) install_ohmyzsh		13) change_docker_mirror"
-    echo "2) sys_timezone		8) install_nginx		14) install_node_exporter"
-    echo "3) set_max_open_files		9) install_openJDK8		15) install_openJDK11"
-    echo "4) set_hostname		10) install_golang		16) exit"
-    echo "5) change_swap		11) install_supervisor		17) help"
-    echo "6) add_user			12) install_docker		"
+    echo "1) patch_upgrade		7) install_ohmyzsh		13) install_docker_compose"
+    echo "2) sys_timezone		8) install_nginx		14) change_docker_mirror"
+    echo "3) set_max_open_files		9) install_openJDK8		15) install_node_exporter"
+    echo "4) set_hostname		10) install_golang		16) install_openJDK11"
+    echo "5) change_swap		11) install_supervisor		17) exit"
+    echo "6) add_user			12) install_docker		18) help"
 }
 
 
@@ -485,15 +494,17 @@ main()
         ;;
         12) install_docker
         ;;
-        13) change_docker_mirror
+        13) install_docker_compose
         ;;
-        14) install_node_exporter
+        14) change_docker_mirror
         ;;
-	15) install_openJDK11
+	15) install_node_exporter
         ;;
-        16) exit
+        16) install_openJDK11
         ;;
-        17) help
+        17) exit
+        ;;
+        18) help
         ;;
         *) echo "please select a true num"
         ;;
