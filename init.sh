@@ -59,7 +59,6 @@ x86_64)
 *)
         echo -e "
         哈哈……这个 ${red}辣鸡脚本${none} 不支持你的系统。 ${yellow}(-_-) ${none}
-
         备注: 仅支持 Ubuntu 16+ / Debian 8+ / CentOS 7+ 系统
         " && exit 1
         ;;
@@ -78,7 +77,6 @@ else
 
         echo -e "
         哈哈……这个 ${red}辣鸡脚本${none} 不支持你的系统。 ${yellow}(-_-) ${none}
-
         备注: 仅支持 Ubuntu 16+ / Debian 8+ / CentOS 7+ 系统
         " && exit 1
 
@@ -260,7 +258,6 @@ install_nginx(){
          '"agent":"\$http_user_agent",'
          '"status":"\$status",'
          '"devicecode":"\$HTTP_HA"}';
-
 eof
 
         sed -i '22r tmp_json.config' /etc/nginx/nginx.conf
@@ -412,7 +409,6 @@ redirect_stderr=true    ; std_error日志重定向到std_out
 stdout_logfile_maxbytes=50MB    ; 日志最大大小
 stdout_logfile_backups=10    ; 日志最多保留数量
 stdout_logfile=/var/log/supervisor/node_exporter.log    ; 日志路径
-
 eof
 
 		supervisorctl update
@@ -425,6 +421,163 @@ eof
 
 #安装mysql,等待增加
 
+
+PID_info()
+{
+    read -p "请输入要查询的PID: " P
+
+    n=`ps -aux| awk '$2~/^'${P}'$/{print $0}'|wc -l`
+
+    if [ $n -eq 0 ];then
+     echo "该PID不存在！！"
+     exit
+    fi
+    echo -e "${green}--------------------------------${none}"
+    echo -e "${green}进程PID:${none} ${yellow}${P}"
+    echo -e "${green}进程命令：${none} ${yellow}$(ps -aux| awk '$2~/^'$P'$/{for (i=11;i<=NF;i++) printf("%s ",$i)}')${none}"
+    echo -e "${green}进程所属用户:${none} ${yellow}$(ps -aux| awk '$2~/^'$P'$/{print $1}')${none}"
+    echo -e "${green}CPU占用率：${none} ${yellow}$(ps -aux| awk '$2~/^'$P'$/{print $3}')%${none}"
+    echo -e "${green}内存占用率：${none} ${yellow}$(ps -aux| awk '$2~/^'$P'$/{print $4}')%${none}"
+    echo -e "${green}进程开始运行的时间：${none} ${yellow}$(ps -aux| awk '$2~/^'$P'$/{print $9}')${none}"
+    echo -e "${green}进程运行的时间：${none} ${yellow}$(ps -aux| awk '$2~/^'$P'$/{print $10}')${none}"
+    echo -e "${green}进程状态：${none} ${yellow}$(ps -aux| awk '$2~/^'$P'$/{print $8}')${none}"
+    echo -e "${green}进程虚拟内存：${none} ${yellow}$(ps -aux| awk '$2~/^'$P'$/{print $5}')${none}"
+    echo -e "${green}进程共享内存：${none} ${yellow}$(ps -aux| awk '$2~/^'$P'$/{print $6}')${none}"
+    echo -e "${green}--------------------------------${none}"
+}
+
+name_info()
+{
+
+    read -p "请输入要查询的进程名：" NAME
+
+    N=`ps -aux | grep $NAME | grep -v grep | wc -l` ##统计进程总数
+
+    if [ $N -le 0 ];then
+      echo "该进程名没有运行！"
+    fi
+    i=1
+    while [ $N -gt 0 ]
+    do
+      echo -e "${green}***************************************************************${none}"
+      echo -e "${green}进程PID: ${none} ${yellow}$(ps -aux | grep $NAME | grep -v grep | awk 'NR=='$i'{print $0}'| awk '{print $2}')${none}"
+      echo -e "${green}进程命令：${none} ${yellow}$(ps -aux | grep $NAME | grep -v grep | awk 'NR=='$i'{print $0}'| awk '{for (j=11;j<=NF;j++) printf("%s ",$j)}')${none}"
+      echo -e "${green}进程所属用户: ${none} ${yellow}$(ps -aux | grep $NAME | grep -v grep | awk 'NR=='$i'{print $0}'| awk '{print $1}')${none}"
+      echo -e "${green}CPU占用率：${none} ${yellow}$(ps -aux | grep $NAME | grep -v grep | awk 'NR=='$i'{print $0}'| awk '{print $3}')%${none}"
+      echo -e "${green}内存占用率：${none} ${yellow}$(ps -aux | grep $NAME | grep -v grep | awk 'NR=='$i'{print $0}'| awk '{print $4}')%${none}"
+      echo -e "${green}进程开始运行的时间：${none} ${yellow}$(ps -aux | grep $NAME | grep -v grep | awk 'NR=='$i'{print $0}'| awk '{print $9}')${none}"
+      echo -e "${green}进程运行的时间：${none} ${yellow}$(ps -aux | grep $NAME | grep -v grep | awk 'NR=='$i'{print $0}'| awk '{print $10}')${none}"
+      echo -e "${green}进程状态：${none} ${yellow}$(ps -aux | grep $NAME | grep -v grep | awk 'NR=='$i'{print $0}'| awk '{print $8}')${none}"
+      echo -e "${green}进程虚拟内存：${none} ${yellow}$(ps -aux | grep $NAME | grep -v grep | awk 'NR=='$i'{print $0}'| awk '{print $5}')${none}"
+      echo -e "${green}进程共享内存：${none} ${yellow}$(ps -aux | grep $NAME | grep -v grep | awk 'NR=='$i'{print $0}'| awk '{print $6}')${none}"
+      echo -e "${green}***************************************************************${none}"
+      let N-- i++
+    done
+
+}
+
+user_info()
+{
+    read -p "请输入要查询的用户名：" name
+
+    echo -e "${green}------------------------------${none}"
+
+    n=`cat /etc/passwd | awk -F: '$1~/^'${name}'$/{print}' | wc -l`
+
+    if [ $n -eq 0 ];then
+    echo -e "${red}该用户不存在！${none}"
+    echo -e "${green}------------------------------${none}"
+    else
+      echo -e "${green}该用户的用户名：${none}${yellow}${name}${none}"
+      echo -e "${green}该用户的UID：${none}${yellow}$(cat /etc/passwd | awk -F: '$1~/^'${name}'$/{print}'|awk -F: '{print $3}')${none}"
+      echo -e "${green}该用户的组为：${none}${yellow}$(id ${name} | awk {'print $3'})${none}"
+      echo -e "${green}该用户的GID为：${none}${yellow}$(cat /etc/passwd | awk -F: '$1~/^'${name}'$/{print}'|awk -F: '{print $4}')${none}"
+      echo -e "${green}该用户的家目录为：${none}${yellow}$(cat /etc/passwd | awk -F: '$1~/^'${name}'$/{print}'|awk -F: '{print $6}')${none}"
+      Login=$(cat /etc/passwd | awk -F: '$1~/^'${name}'$/{print}'|awk -F: '{print $7}')
+      if [ ${Login} == "/bin/bash" ];then
+      echo -e "${magenta}该用户有登录系统的权限${none}"
+      echo -e "${green}------------------------------${none}"
+      elif [ ${Login} == "/sbin/nologin" ];then
+      echo -e "${green}该用户没有登录系统的权限！${none}"
+      echo -e "${green}------------------------------${none}"
+      fi
+    fi
+}
+
+tcp_connect_status(){
+
+    #统计不同状态 tcp 连接（除了 LISTEN ）
+    all_status_tcp=$(netstat -nt | awk 'NR>2 {print $6}' | sort | uniq -c)
+
+    #打印各状态 tcp 连接以及连接数
+    all_tcp=$(netstat -na | awk '/^tcp/ {++S[$NF]};END {for(a in S) print a, S[a]}')
+
+
+    #统计有哪些 IP 地址连接到了本地 80 端口（ipv4）
+    connect_80_ip=$(netstat -ant| grep -v 'tcp6' | awk '/:80/{split($5,ip,":");++S[ip[1]]}END{for (a in S) print S[a],a}' |sort -n)
+
+
+    #输出前十个连接到了本地 80 端口的 IP 地址（ipv4）
+    top10_connect_80_ip=$(netstat -ant| grep -v 'tcp6' | awk '/:80/{split($5,ip,":");++S[ip[1]]}END{for (a in S) print S[a],a}' |sort -rn|head -n 10)
+
+
+    echo -e "${green}不同状态(除了LISTEN) tcp 连接及连接数为：${none} \n${yellow}${all_status_tcp}${none}"
+    echo -e "${green}各个状态 tcp 连接以及连接数为：${none}\n${yellow}${all_tcp}${none}"
+    echo -e "${green}连接到本地80端口的 IP 地址及连接数为：${none} ${yellow} ${connect_80_ip}${none}"
+    echo -e "${green}前十个连接到本地80端口的 IP 地址及连接数为：${none} ${yellow} ${top10_connect_80_ip}${none}"
+
+}
+
+system_properties(){
+
+    #物理内存使用量
+    mem_used=$(free -m | grep Mem | awk '{print$3}')
+
+    #物理内存总量
+    mem_total=$(free -m | grep Mem | awk '{print$2}')
+
+    #cpu核数
+    cpu_num=$(lscpu  | grep 'CPU(s)' | awk 'NR==1 {print$2}')
+
+    #平均负载
+    load_average=$(uptime  | awk -F : '{print$5}')
+
+    #用户态的CPU使用率
+    cpu_us=$(top -d 1 -n 1 | grep Cpu | awk -F',' '{print $1}' | awk '{print $(NF-1)}')
+
+    #内核态的CPU使用率
+    cpu_sys=$(top -d 1 -n 1 | grep Cpu | awk -F',' '{print $2}' | awk '{print $(NF-1)}')
+
+    #等待I/O的CPU使用率
+    cpu_wa=$(top -d 1 -n 1 | grep Cpu | awk -F',' '{print $5}' | awk '{print $(NF-1)}')
+
+    #处理硬中断的CPU使用率
+    cpu_hi=$(top -d 1 -n 1 | grep Cpu | awk -F',' '{print $6}' | awk '{print $(NF-1)}')
+
+    #处理软中断的CPU使用率
+    cpu_si=$(top -d 1 -n 1 | grep Cpu | awk -F',' '{print $7}'| awk '{print $(NF-1)}')
+
+    echo -e "${green}物理内存使用量(M)为：${none}${yellow}${mem_used}${none}"
+    echo -e "${green}物理内存总量(M)为：${none}${yellow}${mem_total}${none}"
+    echo -e "${green}cpu核数为：${none}${yellow}${cpu_num}${none}"
+    echo -e "${green}平均负载为：${none}${yellow}${load_average}${none}"
+    echo -e "${green}用户态的CPU使用率为：${none}${yellow}${cpu_us}${none}"
+    echo -e "${green}内核态的CPU使用率为：${none}${yellow}${cpu_sys}${none}"
+    echo -e "${green}等待I/O的CPU使用率为：${none}${yellow}${cpu_wa}${none}"
+    echo -e "${green}处理硬中断的CPU使用率为：${none}${yellow}${cpu_hi}${none}"
+    echo -e "${green}处理软中断的CPU使用率为：${none}${yellow}${cpu_si}${none}"
+}
+
+check_file(){
+    #查找系统中任何用户都有写权限的文件（目录），并存放到/tmp/anynone_write.txt
+    find / -type f -perm -2 -o -perm -20 -exec echo {} >> /tmp/anynone_write.txt   \;
+
+    #查找系统中所有含 's' 位权限的程序，并存放到/tmp/s_permission.txt
+    find / -type f -perm -4000 -o -perm -2000 -print -exec echo {} >> /tmp/s_permission.txt  \;
+
+    #查找系统中没有属主以及属组的文件，并存放到/tmp/none.txt
+    find / -nouser -o -nogroup -exec echo {} >> /tmp/none.txt  \;
+}
 
 
 print_systeminfo()
@@ -450,15 +603,21 @@ print_systeminfo()
     echo "**********************************"
 }
 
-help()
-{
-    echo "1) patch_upgrade		7) install_ohmyzsh		13) install_docker_compose"
-    echo "2) sys_timezone		8) install_nginx		14) change_docker_mirror"
-    echo "3) set_max_open_files		9) install_openJDK8		15) install_node_exporter"
-    echo "4) set_hostname		10) install_golang		16) install_openJDK11"
-    echo "5) change_swap		11) install_supervisor		17) exit"
-    echo "6) add_user			12) install_docker		18) help"
-}
+# help()
+# {
+#     echo -e "—————————————— 基本应用安装 ——————————————"
+#     echo "1) patch_upgrade		7) install_ohmyzsh		13) install_docker_compose"
+#     echo "2) sys_timezone		8) install_nginx		14) change_docker_mirror"
+#     echo "3) set_max_open_files		9) install_openJDK8		15) install_node_exporter"
+#     echo "4) set_hostname		10) install_golang		16) install_openJDK11"
+#     echo "5) change_swap		11) install_supervisor		000) exit"
+#     echo "6) add_user			12) install_docker		999) help"
+#     echo -e "—————————————— 其他选项 ——————————————"
+#     echo "101) PID_info      102) user_info      103) system_properties"
+#     echo "104) name_info      105) tcp_connect_status      106) check_file"
+
+
+# }
 
 
 main()
@@ -466,7 +625,8 @@ main()
     print_systeminfo
     centos_funcs="patch_upgrade sys_timezone set_max_open_files set_hostname
                 change_swap add_user install_ohmyzsh install_nginx install_openJDK8 
-		install_golang install_supervisor install_docker install_docker_compose change_docker_mirror install_node_exporter install_openJDK11 exit help"
+                install_golang install_supervisor install_docker install_docker_compose change_docker_mirror install_node_exporter install_openJDK11 
+                PID_info name_info user_info system_properties tcp_connect_status check_file exit"
     select centos_func in $centos_funcs:
     do
         case $REPLY in
@@ -486,7 +646,7 @@ main()
         ;;
         8) install_nginx
         ;;
-	9) install_openJDK8
+        9) install_openJDK8
         ;;
         10) install_golang
         ;;
@@ -498,13 +658,23 @@ main()
         ;;
         14) change_docker_mirror
         ;;
-	15) install_node_exporter
+        15) install_node_exporter
         ;;
         16) install_openJDK11
         ;;
-        17) exit
+        17) PID_info
         ;;
-        18) help
+        18) name_info
+        ;;
+        19) user_info
+        ;;
+        20) system_properties
+        ;;
+        21) tcp_connect_status
+        ;;
+        22) check_file
+        ;;
+        23) exit
         ;;
         *) echo "please select a true num"
         ;;
