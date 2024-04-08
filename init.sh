@@ -233,10 +233,24 @@ install_nginx(){
         echo
         echo -e "${yellow}你已经安装过nginx了，最好卸载后再来安装${none}"
     else
-        apt-get install software-properties-common -y
-        add-apt-repository ppa:nginx/stable -y
-        apt-get update
-        apt-get install nginx -y
+        # apt-get install software-properties-common -y
+        # add-apt-repository ppa:nginx/stable -y
+        # apt-get update
+        # apt-get install nginx -y
+
+ 	apt install curl gnupg2 ca-certificates lsb-release ubuntu-keyring -y
+	curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor \
+	    | sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null
+	gpg --dry-run --quiet --no-keyring --import --import-options import-show /usr/share/keyrings/nginx-archive-keyring.gpg
+	echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] \
+	http://nginx.org/packages/ubuntu `lsb_release -cs` nginx" \
+	    | sudo tee /etc/apt/sources.list.d/nginx.list
+	echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n" \
+	    | sudo tee /etc/apt/preferences.d/99nginx
+	apt update
+	apt install nginx -y
+	systemctl start nginx
+
         # 隐藏nginx版本号
         sed -i "s/.*server_tokens.*/        server_tokens off;/" /etc/nginx/nginx.conf
         # 增加 json日志格式
